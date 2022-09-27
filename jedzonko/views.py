@@ -9,3 +9,7 @@ class IndexView(View):
     def get(self, request):
         ctx = {"actual_date": datetime.now()}
         return render(request, "test.html", ctx)
+
+
+def receipes(request):
+    return render(request, 'app-recipes.html')
