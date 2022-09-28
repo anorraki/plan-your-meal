@@ -24,7 +24,7 @@ urlpatterns = [
     path('', IndexView.as_view()),
     path('main/', views.dashboard),
     path('recipe/<int:recipe_id>/', views.RecipeDetailView.as_view()),
-    path('recipe/list/', views.RecipesView.as_view()),
+    path('recipe/list/', views.RecipesView.as_view(), name='receipes'),
     path('recipe/add/', views.AddRecipeView.as_view()),
     path('recipe/modify/<int:recipe_id>/', views.EditRecipeView.as_view()),
     path('plan/list/', views.PlansView.as_view()),
