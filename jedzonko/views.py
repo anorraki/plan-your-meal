@@ -11,6 +11,10 @@ class IndexView(View):
         return render(request, "index.html", ctx)
 
 
+def dashboard(request):
+    return render(request, 'dashboard.html')
+    
+
 class RecipeDetailView(View):
     def get(self, request):
         return render(request, 'app-recipe-details.html')
@@ -54,3 +58,4 @@ class EditPlanView(View):
 class AddRecipeToPlanView(View):
     def get(self, request):
         return render(request, 'app-schedules-meal-recipe.html')
+
