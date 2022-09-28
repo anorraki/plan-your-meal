@@ -23,4 +23,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('receipe/list/', views.receipes, name='receipes'),
     path('', IndexView.as_view()),
+    path('recipe/<int:recipe_id>/', views.RecipeDetailView.as_view()),
+    path('recipe/list/', views.RecipesView.as_view()),
+    path('recipe/add/', views.AddRecipeView.as_view()),
+    path('recipe/modify/<int:recipe_id>/', views.EditRecipeView.as_view()),
+    path('plan/list/', views.PlansView.as_view()),
+    path('plan/<int:plan_id>/', views.PlanDetailView.as_view()),
+    path('plan/add/', views.AddPlanView.as_view()),
+    path('plan/add-recipe/', views.AddRecipeToPlanView.as_view()),
 ]
