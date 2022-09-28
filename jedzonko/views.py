@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 
 from django.core.paginator import Paginator
@@ -11,7 +12,17 @@ from jedzonko.models import Recipe
 class IndexView(View):
 
     def get(self, request):
-        ctx = {"actual_date": datetime.now()}
+        all_recipes = list(Recipe.objects.all())
+        random.shuffle(all_recipes)
+        mixed_recipes = all_recipes[0:3]
+        m1 = mixed_recipes[0]
+        m2 = mixed_recipes[1]
+        m3 = mixed_recipes[2]
+        ctx = {"actual_date": datetime.now(),
+               'm1': m1,
+               'm2': m2,
+               'm3': m3
+               }
         return render(request, "index.html", ctx)
 
 
@@ -69,4 +80,3 @@ class EditPlanView(View):
 class AddRecipeToPlanView(View):
     def get(self, request):
         return render(request, 'app-schedules-meal-recipe.html')
-
