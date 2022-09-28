@@ -22,7 +22,7 @@ from jedzonko.views import IndexView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', IndexView.as_view()),
-    path('main/', views.dashboard),
+    path('main/', views.DashboardView.as_view()),
     path('recipe/<int:recipe_id>/', views.RecipeDetailView.as_view()),
     path('recipe/list/', views.RecipesView.as_view(), name='receipes'),
     path('recipe/add/', views.AddRecipeView.as_view()),

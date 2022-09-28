@@ -1,5 +1,8 @@
 import random
 from datetime import datetime
+
+from django.core.paginator import Paginator
+
 from django.shortcuts import render
 from django.views import View
 
@@ -23,8 +26,11 @@ class IndexView(View):
         return render(request, "index.html", ctx)
 
 
-def dashboard(request):
-    return render(request, 'dashboard.html')
+class DashboardView(View):
+
+    def get(sefl, request):
+        recipes_count = Recipe.objects.count()
+        return render(request, 'dashboard.html', {"recipes_count": recipes_count})
     
 
 class RecipeDetailView(View):
@@ -34,7 +40,11 @@ class RecipeDetailView(View):
 
 class RecipesView(View):
     def get(self, request):
-        return render(request, 'app-recipes.html')
+        recipes_lists = Recipe.objects.all().order_by('votes').order_by('created')
+        paginator = Paginator(recipes_lists, 1)
+        page = request.GET.get('page')
+        recipes = paginator.get_page(page)
+        return render(request, 'app-recipes.html', {'recipes': recipes})
 
 
 class AddRecipeView(View):
@@ -70,6 +80,3 @@ class EditPlanView(View):
 class AddRecipeToPlanView(View):
     def get(self, request):
         return render(request, 'app-schedules-meal-recipe.html')
-
-
-
