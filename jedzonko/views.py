@@ -1,7 +1,11 @@
 from datetime import datetime
 
+from django.core import paginator
+
 from django.shortcuts import render
 from django.views import View
+
+from jedzonko.models import Recipe
 
 
 class IndexView(View):
@@ -22,7 +26,8 @@ class RecipeDetailView(View):
 
 class RecipesView(View):
     def get(self, request):
-        return render(request, 'app-recipes.html')
+        recipes = Recipe.objects.all().order_by('votes').order_by('created')
+        return render(request, 'app-recipes.html', {'recipes': recipes})
 
 
 class AddRecipeView(View):
