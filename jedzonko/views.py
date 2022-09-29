@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.core.paginator import Paginator
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 
 from jedzonko.models import Recipe
@@ -50,7 +50,15 @@ class RecipesView(View):
 class AddRecipeView(View):
     def get(self, request):
         return render(request, 'app-add-recipe.html')
-
+    def post(self, request):
+        name = request.POST['recipe_name']
+        ingredients = request.POST['recipe_ingredients']
+        description = request.POST['recipe_description']
+        preparation_time = request.POST['recipe_preparation']
+        recipe = Recipe(name=name, ingredients=ingredients,
+                        description=description, preparation_time=preparation_time)
+        recipe.save()
+        return redirect('/recipe/list/')
 
 class EditRecipeView(View):
     def get(self, request):
