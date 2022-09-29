@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.core.paginator import Paginator
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 
 from jedzonko.models import Recipe
@@ -40,7 +40,7 @@ class RecipeDetailView(View):
 
 class RecipesView(View):
     def get(self, request):
-        recipes_lists = Recipe.objects.all().order_by('votes').order_by('created')
+        recipes_lists = Recipe.objects.all().order_by('votes').order_by('-created')
         paginator = Paginator(recipes_lists, 50)
         page = request.GET.get('page')
         recipes = paginator.get_page(page)
@@ -50,6 +50,19 @@ class RecipesView(View):
 class AddRecipeView(View):
     def get(self, request):
         return render(request, 'app-add-recipe.html')
+    def post(self, request):
+        name = request.POST['recipe_name']
+        ingredients = request.POST['recipe_ingredients']
+        description = request.POST['recipe_description']
+        preparation_time = request.POST['recipe_preparation']
+        if not name.strip(' ') or not ingredients.strip(' ') or \
+                not description.strip(' ') or not preparation_time:
+            return render(request, 'app-add-recipe.html', {'alert': 'Wypełnij poprawnie wszystkie pola.'})
+        else:
+            recipe = Recipe(name=name, ingredients=ingredients,
+                        description=description, preparation_time=preparation_time)
+            recipe.save()
+            return redirect('/recipe/list/')
 
 
 class EditRecipeView(View):
