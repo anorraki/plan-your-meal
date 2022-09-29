@@ -41,7 +41,7 @@ class RecipeDetailView(View):
 class RecipesView(View):
     def get(self, request):
         recipes_lists = Recipe.objects.all().order_by('votes').order_by('created')
-        paginator = Paginator(recipes_lists, 1)
+        paginator = Paginator(recipes_lists, 50)
         page = request.GET.get('page')
         recipes = paginator.get_page(page)
         return render(request, 'app-recipes.html', {'recipes': recipes})
