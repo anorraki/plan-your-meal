@@ -11,6 +11,23 @@ class Recipe(models.Model):
     preparation_time = models.IntegerField()
     votes = models.PositiveIntegerField(default=0)
 
+class Plan(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    created = models.DateField(auto_now_add=False, default=date.today)
+    recipes = models.ManyToManyField(Recipe, through='RecipePlan')
+
+class DayName(models.Model):
+    day_name = models.CharField(max_length=16)
+    order = models.IntegerField().unique
+
+class RecipePlan(models.Model):
+    meal_name = models.CharField(max_length=255)
+    recipe = models.ForeignKey(Recipe,on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan,on_delete=models.CASCADE)
+    order = models.IntegerField()
+    day_name = models.ForeignKey(DayName,on_delete=models.CASCADE)
+
 
 # brownie = Recipe()
 # brownie.name = "Brownie"
