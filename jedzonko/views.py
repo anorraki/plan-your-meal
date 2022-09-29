@@ -55,9 +55,8 @@ class AddRecipeView(View):
         ingredients = request.POST['recipe_ingredients']
         description = request.POST['recipe_description']
         preparation_time = request.POST['recipe_preparation']
-        if not name.strip(' ') or not ingredients.strip(' '):
-            return render(request, 'app-add-recipe.html', {'alert': 'Wypełnij poprawnie wszystkie pola.'})
-        elif not description.strip(' ') or not preparation_time:
+        if not name.strip(' ') or not ingredients.strip(' ') or \
+                not description.strip(' ') or not preparation_time:
             return render(request, 'app-add-recipe.html', {'alert': 'Wypełnij poprawnie wszystkie pola.'})
         else:
             recipe = Recipe(name=name, ingredients=ingredients,
