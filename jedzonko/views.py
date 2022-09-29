@@ -40,7 +40,7 @@ class RecipeDetailView(View):
 
 class RecipesView(View):
     def get(self, request):
-        recipes_lists = Recipe.objects.all().order_by('votes').order_by('created')
+        recipes_lists = Recipe.objects.all().order_by('votes').order_by('-created')
         paginator = Paginator(recipes_lists, 1)
         page = request.GET.get('page')
         recipes = paginator.get_page(page)
@@ -55,10 +55,15 @@ class AddRecipeView(View):
         ingredients = request.POST['recipe_ingredients']
         description = request.POST['recipe_description']
         preparation_time = request.POST['recipe_preparation']
-        recipe = Recipe(name=name, ingredients=ingredients,
+        if not name.strip(' ') or not ingredients.strip(' '):
+            return render(request, 'app-add-recipe.html', {'alert': 'Wypełnij poprawnie wszystkie pola.'})
+        elif not description.strip(' ') or not preparation_time:
+            return render(request, 'app-add-recipe.html', {'alert': 'Wypełnij poprawnie wszystkie pola.'})
+        else:
+            recipe = Recipe(name=name, ingredients=ingredients,
                         description=description, preparation_time=preparation_time)
-        recipe.save()
-        return redirect('/recipe/list/')
+            recipe.save()
+            return redirect('/recipe/list/')
 
 class EditRecipeView(View):
     def get(self, request):
