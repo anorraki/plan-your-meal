@@ -1,4 +1,5 @@
 import random
+import re
 from datetime import datetime
 
 from django.core.paginator import Paginator
@@ -34,8 +35,13 @@ class DashboardView(View):
     
 
 class RecipeDetailView(View):
-    def get(self, request):
-        return render(request, 'app-recipe-details.html')
+    def get(self, request, recipe_id):
+        recipe = Recipe.objects.get(pk=recipe_id)
+
+        # Stworzona lista składników, by składniki były wyświetlane w oddzielnych wersach
+        ingreditents_list = list(re.split("\n|; ", recipe.ingredients))
+        return render(request, 'app-recipe-details.html', {'recipe': recipe,
+                                                           'ingredients': ingreditents_list})
 
 
 class RecipesView(View):
