@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.views import View
 
-from jedzonko.models import Recipe
+from jedzonko.models import Recipe, Plan
 
 
 class IndexView(View):
@@ -85,7 +85,13 @@ class AddPlanView(View):
         return render(request, 'app-add-schedules.html')
 
     def post(self, request):
-        return redirect('/plan/list/')
+        name = request.POST.get('planName')
+        description = request.POST.get('planDescription')
+        if name == '' or description == '':
+            return render(request, 'app-add-schedules.html', {'error': "Proszę wpisać właściwe dane"})
+        Plan(name=name, description=description).save()
+        new_id = Plan.objects.get(name=name).id
+        return redirect(f"/plan/{new_id}/details")
 
 
 
