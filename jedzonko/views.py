@@ -82,11 +82,11 @@ class EditRecipeView(View):
 
 class PlansView(View):
     def get(self, request):
-        plans_lists = Plan.objects.all().order_by('name')
-        paginator = Paginator(plans_lists, 50)
+        plans = Plan.objects.all().order_by('name')
+        paginator = Paginator(plans, 50)
         page = request.GET.get('page')
         plans = paginator.get_page(page)
-        num = plans_lists.count()
+        num = Plan.objects.count()
         return render(request, 'app-schedules.html', {'plans': plans, 'num': num})
 
 
