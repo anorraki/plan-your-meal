@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.views import View
 
-from jedzonko.models import Recipe
+from jedzonko.models import Recipe, Plan
 
 
 class IndexView(View):
@@ -86,8 +86,9 @@ class PlansView(View):
 
 
 class PlanDetailView(View):
-    def get(self, request):
-        return render(request, 'app-details-schedules.html')
+    def get(self, request, plan_id):
+        plan = Plan.objects.get(pk=plan_id)
+        return render(request, 'app-details-schedules.html', {"plan": plan})
 
 
 class AddPlanView(View):
