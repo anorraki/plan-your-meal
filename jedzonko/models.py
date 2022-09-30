@@ -10,6 +10,8 @@ class Recipe(models.Model):
     updated = models.DateField(auto_now=False, default=date.today)
     preparation_time = models.IntegerField()
     votes = models.PositiveIntegerField(default=0)
+    method = models.TextField()
+
 
 class Plan(models.Model):
     name = models.CharField(max_length=255)
@@ -17,41 +19,47 @@ class Plan(models.Model):
     created = models.DateField(auto_now_add=False, default=date.today)
     recipes = models.ManyToManyField(Recipe, through='RecipePlan')
 
+
 class DayName(models.Model):
     day_name = models.CharField(max_length=16)
     order = models.IntegerField().unique
 
+
 class RecipePlan(models.Model):
     meal_name = models.CharField(max_length=255)
-    recipe = models.ForeignKey(Recipe,on_delete=models.CASCADE)
-    plan = models.ForeignKey(Plan,on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     order = models.IntegerField()
-    day_name = models.ForeignKey(DayName,on_delete=models.CASCADE)
+    day_name = models.ForeignKey(DayName, on_delete=models.CASCADE)
 
 
 # brownie = Recipe()
 # brownie.name = "Brownie"
-# brownie.ingredients = "Buraki gotowane, gorzka czekolada, jajka, migdały, mąka kokosowa, olej kokosowy, sól, proszek do pieczenia."
+# brownie.ingredients = "Buraki gotowane; gorzka czekolada; jajka, migdały; mąka kokosowa; olej kokosowy; sól; proszek do pieczenia."
 # brownie.description = "Dietetyczne brownie bez dodatku cukru, idealne do zielonej kawy z mlekiem z orzechów macadamia."
 # brownie.preparation_time = 65
 # brownie.votes = 10
+# brownie.method = "Dodaj, dolej, wymieszaj, podgrzej, zapiecz, wyciągnij, jedz, powtórz i tak w kółko, albo zmień coś i zrób inaczej"
 # brownie.save()
 #
 # apple_pie = Recipe()
 # apple_pie.name = "Apple Pie"
-# apple_pie.ingredients = "Jabłka, gruszki, mąka pszenna, jajka, mleko, proszek do pieczenia, masło"
+# apple_pie.ingredients = "Jabłka; gruszki; mąka pszenna; jajka; mleko; proszek do pieczenia; masło"
 # apple_pie.description = "Pyszna, dietetyczna szarlotka bez cukru, najlepiej smakuje na ciepło z lodami waniliowymi i bitą śmietaną"
 # apple_pie.preparation_time = 75
 # apple_pie.votes = 9
+# apple_pie.method = "Dodaj, dolej, wymieszaj, podgrzej, zapiecz, wyciągnij, jedz"
 # apple_pie.save()
 #
 # gofry = Recipe()
 # gofry.name = "Goferki"
-# gofry.ingredients = "Jajka, mąka migdałowa, mąka kokosowa, drożdże"
+# gofry.ingredients = "Jajka; mąka migdałowa; mąka kokosowa; drożdże"
 # gofry.description = "Pyszne i chrupiące goferki, najlepsze z bitą śmietaną, nutellą i owocami"
 # gofry.preparation_time = 35
 # gofry.votes = 8
+# gofry.method = "jedz, powtórz i tak w kółko, albo zmień coś i zrób inaczej"
 # gofry.save()
+#
 #
 # all = Recipe.objects.all()
 # print(all)
