@@ -31,7 +31,7 @@ class DashboardView(View):
     def get(sefl, request):
         recipes_count = Recipe.objects.count()
         return render(request, 'dashboard.html', {"recipes_count": recipes_count})
-    
+
 
 class RecipeDetailView(View):
     def get(self, request):
@@ -50,17 +50,21 @@ class RecipesView(View):
 class AddRecipeView(View):
     def get(self, request):
         return render(request, 'app-add-recipe.html')
+
     def post(self, request):
         name = request.POST['recipe_name']
         ingredients = request.POST['recipe_ingredients']
         description = request.POST['recipe_description']
         preparation_time = request.POST['recipe_preparation']
-        if not name.strip(' ') or not ingredients.strip(' ') or \
-                not description.strip(' ') or not preparation_time:
+        method = request.POST['recipe_method']
+        if not name.strip(' ') or not ingredients.strip(' ') \
+                or not description.strip(' ') or not preparation_time\
+                or not method.strip(' '):
             return render(request, 'app-add-recipe.html', {'alert': 'Wypełnij poprawnie wszystkie pola.'})
         else:
             recipe = Recipe(name=name, ingredients=ingredients,
-                        description=description, preparation_time=preparation_time)
+                            description=description, preparation_time=preparation_time,
+                            method=method)
             recipe.save()
             return redirect('/recipe/list/')
 
@@ -86,8 +90,6 @@ class AddPlanView(View):
 
     def post(self, request):
         return redirect('/plan/list/')
-
-
 
 
 class EditPlanView(View):
