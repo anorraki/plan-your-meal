@@ -1,9 +1,10 @@
 import random
+import re
 from datetime import datetime
 
 from django.core.paginator import Paginator
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 
 from jedzonko.models import Recipe, Plan
@@ -31,17 +32,22 @@ class DashboardView(View):
     def get(sefl, request):
         recipes_count = Recipe.objects.count()
         return render(request, 'dashboard.html', {"recipes_count": recipes_count})
-    
+
 
 class RecipeDetailView(View):
-    def get(self, request):
-        return render(request, 'app-recipe-details.html')
+    def get(self, request, recipe_id):
+        recipe = Recipe.objects.get(pk=recipe_id)
+
+        # Stworzona lista składników, by składniki były wyświetlane w oddzielnych wersach
+        ingreditents_list = list(re.split("\n|; ", recipe.ingredients))
+        return render(request, 'app-recipe-details.html', {'recipe': recipe,
+                                                           'ingredients': ingreditents_list})
 
 
 class RecipesView(View):
     def get(self, request):
-        recipes_lists = Recipe.objects.all().order_by('votes').order_by('created')
-        paginator = Paginator(recipes_lists, 1)
+        recipes_lists = Recipe.objects.all().order_by('votes').order_by('-created')
+        paginator = Paginator(recipes_lists, 50)
         page = request.GET.get('page')
         recipes = paginator.get_page(page)
         return render(request, 'app-recipes.html', {'recipes': recipes})
@@ -50,6 +56,23 @@ class RecipesView(View):
 class AddRecipeView(View):
     def get(self, request):
         return render(request, 'app-add-recipe.html')
+
+    def post(self, request):
+        name = request.POST['recipe_name']
+        ingredients = request.POST['recipe_ingredients']
+        description = request.POST['recipe_description']
+        preparation_time = request.POST['recipe_preparation']
+        method = request.POST['recipe_method']
+        if not name.strip(' ') or not ingredients.strip(' ') \
+                or not description.strip(' ') or not preparation_time\
+                or not method.strip(' '):
+            return render(request, 'app-add-recipe.html', {'alert': 'Wypełnij poprawnie wszystkie pola.'})
+        else:
+            recipe = Recipe(name=name, ingredients=ingredients,
+                            description=description, preparation_time=preparation_time,
+                            method=method)
+            recipe.save()
+            return redirect('/recipe/list/')
 
 
 class EditRecipeView(View):
@@ -75,6 +98,9 @@ class PlanDetailView(View):
 class AddPlanView(View):
     def get(self, request):
         return render(request, 'app-add-schedules.html')
+
+    def post(self, request):
+        return redirect('/plan/list/')
 
 
 class EditPlanView(View):
