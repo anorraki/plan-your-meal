@@ -84,6 +84,11 @@ class AddPlanView(View):
     def get(self, request):
         return render(request, 'app-add-schedules.html')
 
+    def post(self, request):
+        return redirect('/plan/list/')
+
+
+
 
 class EditPlanView(View):
     def get(self, request):
