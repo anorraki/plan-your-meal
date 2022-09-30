@@ -63,7 +63,8 @@ class PlansView(View):
         paginator = Paginator(plans_lists, 50)
         page = request.GET.get('page')
         plans = paginator.get_page(page)
-        return render(request, 'app-schedules.html', {'plans': plans})
+        num = plans_lists.count()
+        return render(request, 'app-schedules.html', {'plans': plans, 'num': num})
 
 
 class PlanDetailView(View):
