@@ -13,7 +13,6 @@ class Recipe(models.Model):
     method = models.TextField()
 
 
-
 class Plan(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -23,7 +22,7 @@ class Plan(models.Model):
 
 class DayName(models.Model):
     day_name = models.CharField(max_length=16)
-    order = models.IntegerField().unique
+    order = models.IntegerField(unique=True)
 
 
 class RecipePlan(models.Model):
