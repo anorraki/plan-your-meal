@@ -37,6 +37,7 @@ class DashboardView(View):
         days_in_plan = set(day.day_name for day in recipe_plans.order_by('day_name'))
 
         return render(request, 'dashboard.html', {"recipes_count": recipes_count,
+                                                  'num': num,
                                                   'last_plan': last_plan,
                                                   'recipe_plans': recipe_plans,
                                                   'days_in_plan': days_in_plan})
