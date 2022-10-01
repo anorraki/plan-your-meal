@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.views import View
 
-from jedzonko.models import Recipe, Plan
+from jedzonko.models import Recipe, Plan, RecipePlan, DayName
 
 
 class IndexView(View):
@@ -127,4 +127,13 @@ class AddRecipeToPlanView(View):
         meal_number = request.POST.get('mealNumber')
         recipe = request.POST.get('recipe')
         day = request.POST.get('day')
-        return redirect("/plan/add-recipe/",)
+
+        plan_instance = Plan.objects.get(name=plan_name)
+        recipe_instance = Recipe.objects.get(name=recipe)
+        day_instance = DayName.objects.get(day_name=day, order=True)
+
+        RecipePlan.objects.create(meal_name=meal_name, recipe=recipe_instance, plan=plan_instance, order=meal_number, day_name=day_instance)
+        chosen_plan = Plan.objects.filter(name=plan_name)
+        plan_id = chosen_plan.id
+        return redirect("/plan/"+plan_id+"/",)
+        # return render(request, "app-schedules-meal-recipe.html", {'info': f'plan_name {plan_name}, meal_name {meal_name}, meal_number {meal_number}, recipe {recipe}, day {day}.'})
