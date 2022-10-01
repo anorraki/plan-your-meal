@@ -31,7 +31,8 @@ class DashboardView(View):
 
     def get(sefl, request):
         recipes_count = Recipe.objects.count()
-        return render(request, 'dashboard.html', {"recipes_count": recipes_count})
+        num = Plan.objects.count()
+        return render(request, 'dashboard.html', {"recipes_count": recipes_count, 'num': num})
 
 
 class RecipeDetailView(View):
