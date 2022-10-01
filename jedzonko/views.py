@@ -117,4 +117,14 @@ class EditPlanView(View):
 
 class AddRecipeToPlanView(View):
     def get(self, request):
-        return render(request, 'app-schedules-meal-recipe.html')
+        plans = Plan.objects.all()
+        recipes = Recipe.objects.all()
+        return render(request, "app-schedules-meal-recipe.html", {'plans': plans, 'recipes': recipes})
+
+    def post(self, request):
+        plan_name = request.POST.get('choosePlan')
+        meal_name = request.POST.get('mealName')
+        meal_number = request.POST.get('mealNumber')
+        recipe = request.POST.get('recipe')
+        day = request.POST.get('day')
+        return redirect("/plan/add-recipe/",)
