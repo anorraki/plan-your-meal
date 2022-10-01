@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.views import View
 
-from jedzonko.models import Recipe, Plan, RecipePlan
+from jedzonko.models import Recipe, Plan
 
 
 class IndexView(View):
@@ -29,8 +29,10 @@ class IndexView(View):
 
 class DashboardView(View):
 
-    def get(self, request):
+    def get(sefl, request):
         recipes_count = Recipe.objects.count()
+        num = Plan.objects.count()
+        return render(request, 'dashboard.html', {"recipes_count": recipes_count, 'num': num})
 
         last_plan = Plan.objects.order_by('-created')[0]
 
