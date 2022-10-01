@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.views import View
 
-from jedzonko.models import Recipe, Plan
+from jedzonko.models import Recipe, Plan, DayName, RecipePlan
 
 
 class IndexView(View):
@@ -88,7 +88,14 @@ class PlansView(View):
 class PlanDetailView(View):
     def get(self, request, plan_id):
         plan = Plan.objects.get(pk=plan_id)
-        return render(request, 'app-details-schedules.html', {"plan": plan})
+        day_name = DayName.objects.count()
+        detail_dict = {}
+        for day in range(1, day_name+1):
+            query_set = plan.recipeplan_set.filter(day_name=day)
+            if query_set.count() != 0:
+                detail_dict[plan.recipeplan_set.filter(day_name=day)[0].day_name.day_name] = query_set[::-1]
+        return render(request, 'app-details-schedules.html', {'plan': plan,
+                                                              'datail_dict': detail_dict})
 
 
 class AddPlanView(View):
