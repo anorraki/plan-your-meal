@@ -93,7 +93,7 @@ class PlanDetailView(View):
         for day in range(1, day_name+1):
             query_set = plan.recipeplan_set.filter(day_name=day)
             if query_set.count() != 0:
-                detail_dict[plan.recipeplan_set.filter(day_name=day)[0].day_name.day_name] = query_set[::-1]
+                detail_dict[plan.recipeplan_set.filter(day_name=day)[0].day_name.day_name] = query_set[::1]
         return render(request, 'app-details-schedules.html', {'plan': plan,
                                                               'datail_dict': detail_dict})
 
