@@ -1,13 +1,11 @@
 import random
 import re
 from datetime import datetime
-
 from django.core.paginator import Paginator
-
 from django.shortcuts import render, redirect
 from django.views import View
-
 from jedzonko.models import Recipe, Plan, DayName, RecipePlan
+
 
 
 class IndexView(View):
@@ -31,7 +29,18 @@ class DashboardView(View):
 
     def get(sefl, request):
         recipes_count = Recipe.objects.count()
-        return render(request, 'dashboard.html', {"recipes_count": recipes_count})
+        num = Plan.objects.count()
+        return render(request, 'dashboard.html', {"recipes_count": recipes_count, 'num': num})
+
+        last_plan = Plan.objects.order_by('-created')[0]
+
+        recipe_plans = RecipePlan.objects.filter(plan=last_plan).order_by('order')
+        days_in_plan = set(day.day_name for day in recipe_plans.order_by('day_name'))
+
+        return render(request, 'dashboard.html', {"recipes_count": recipes_count,
+                                                  'last_plan': last_plan,
+                                                  'recipe_plans': recipe_plans,
+                                                  'days_in_plan': days_in_plan})
 
 
 class RecipeDetailView(View):
@@ -82,7 +91,12 @@ class EditRecipeView(View):
 
 class PlansView(View):
     def get(self, request):
-        return render(request, 'app-schedules.html')
+        plans = Plan.objects.all().order_by('name')
+        paginator = Paginator(plans, 50)
+        page = request.GET.get('page')
+        plans = paginator.get_page(page)
+        num = Plan.objects.count()
+        return render(request, 'app-schedules.html', {'plans': plans, 'num': num})
 
 
 class PlanDetailView(View):
@@ -103,7 +117,13 @@ class AddPlanView(View):
         return render(request, 'app-add-schedules.html')
 
     def post(self, request):
-        return redirect('/plan/list/')
+        name = request.POST.get('planName')
+        description = request.POST.get('planDescription')
+        if name == '' or description == '':
+            return render(request, 'app-add-schedules.html', {'error': "Proszę wpisać właściwe dane"})
+        Plan(name=name, description=description).save()
+        new_id = Plan.objects.get(name=name).id
+        return redirect(f"/plan/{new_id}/details")
 
 
 class EditPlanView(View):
