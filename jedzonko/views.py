@@ -149,10 +149,10 @@ class AddRecipeToPlanView(View):
 
         plan_instance = Plan.objects.get(name=plan_name)
         recipe_instance = Recipe.objects.get(name=recipe)
-        day_instance = DayName.objects.get(day_name=day, order=True)
+        r = recipe_instance[0]
+        day_instance = DayName.objects.get(day_name=day)
 
-        RecipePlan.objects.create(meal_name=meal_name, recipe=recipe_instance, plan=plan_instance, order=meal_number, day_name=day_instance)
-        chosen_plan = Plan.objects.filter(name=plan_name)
-        plan_id = chosen_plan.id
-        return redirect("/plan/"+plan_id+"/",)
+        RecipePlan.objects.create(meal_name=meal_name, recipe=r, plan=plan_instance, order=meal_number, day_name=day_instance)
+        chosen_plan = Plan.objects.filter(name=plan_name).id
+        return redirect(f"/plan/{chosen_plan}/",)
         # return render(request, "app-schedules-meal-recipe.html", {'info': f'plan_name {plan_name}, meal_name {meal_name}, meal_number {meal_number}, recipe {recipe}, day {day}.'})

@@ -31,3 +31,4 @@ class RecipePlan(models.Model):
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
     order = models.IntegerField()
     day_name = models.ForeignKey(DayName, on_delete=models.CASCADE)
+
