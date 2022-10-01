@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 
 from django.shortcuts import render, redirect
 from django.views import View
+from jedzonko.models import Recipe, Plan, DayName, RecipePlan
 
 from jedzonko.models import Recipe, Plan, RecipePlan, DayName
 
@@ -32,7 +33,17 @@ class DashboardView(View):
     def get(sefl, request):
         recipes_count = Recipe.objects.count()
         num = Plan.objects.count()
-        return render(request, 'dashboard.html', {"recipes_count": recipes_count, 'num': num})
+
+        last_plan = Plan.objects.order_by('-created')[0]
+
+        recipe_plans = RecipePlan.objects.filter(plan=last_plan).order_by('order')
+        days_in_plan = set(day.day_name for day in recipe_plans.order_by('day_name'))
+
+        return render(request, 'dashboard.html', {"recipes_count": recipes_count,
+                                                  'num': num,
+                                                  'last_plan': last_plan,
+                                                  'recipe_plans': recipe_plans,
+                                                  'days_in_plan': days_in_plan})
 
 
 class RecipeDetailView(View):
@@ -92,8 +103,16 @@ class PlansView(View):
 
 
 class PlanDetailView(View):
-    def get(self, request):
-        return render(request, 'app-details-schedules.html')
+    def get(self, request, plan_id):
+        plan = Plan.objects.get(pk=plan_id)
+        day_name = DayName.objects.count()
+        detail_dict = {}
+        for day in range(1, day_name+1):
+            query_set = plan.recipeplan_set.filter(day_name=day)
+            if query_set.count() != 0:
+                detail_dict[plan.recipeplan_set.filter(day_name=day)[0].day_name.day_name] = query_set[::1]
+        return render(request, 'app-details-schedules.html', {'plan': plan,
+                                                              'datail_dict': detail_dict})
 
 
 class AddPlanView(View):
