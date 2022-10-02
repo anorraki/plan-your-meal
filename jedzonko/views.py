@@ -127,7 +127,7 @@ class AddPlanView(View):
             return render(request, 'app-add-schedules.html', {'error': "Proszę wpisać właściwe dane"})
         Plan(name=name, description=description).save()
         new_id = Plan.objects.get(name=name).id
-        return redirect(f"/plan/{new_id}/details")
+        return redirect(f"/plan/{new_id}/")
 
 
 class EditPlanView(View):
