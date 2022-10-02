@@ -10,7 +10,6 @@ from django.views import View
 from jedzonko.models import Recipe, Plan, DayName, RecipePlan
 
 
-
 class IndexView(View):
 
     def get(self, request):
@@ -90,7 +89,7 @@ class AddRecipeView(View):
         preparation_time = request.POST['recipe_preparation']
         method = request.POST['recipe_method']
         if not name.strip(' ') or not ingredients.strip(' ') \
-                or not description.strip(' ') or not preparation_time\
+                or not description.strip(' ') or not preparation_time \
                 or not method.strip(' '):
             return render(request, 'app-add-recipe.html', {'alert': 'Wypełnij poprawnie wszystkie pola.'})
         else:
@@ -130,6 +129,12 @@ class EditRecipeView(View):
             recipe.method = method
             recipe.save()
             return redirect('/recipe/list/')
+
+
+class DeleteRecipeView(View):
+    def get(self, request, recipe_id):
+        Recipe.objects.filter(pk=recipe_id).delete()
+        return redirect('/recipe/list/')
 
 
 class PlansView(View):
@@ -174,6 +179,12 @@ class EditPlanView(View):
         return render(request, 'app-edit-schedules.html')
 
 
+class DeletePlanView(View):
+    def get(self, request, plan_id):
+        Plan.objects.filter(pk=plan_id).delete()
+        return redirect('/plan/list/')
+
+
 class AddRecipeToPlanView(View):
     def get(self, request):
         plans = Plan.objects.all().order_by('name')
@@ -192,11 +203,11 @@ class AddRecipeToPlanView(View):
         recipe_instance = Recipe.objects.get(name=recipe)
         day_instance = DayName.objects.get(day_name=day)
         recipe_instance_to_save = RecipePlan(
-                meal_name=meal_name,
-                recipe=recipe_instance,
-                plan=plan_instance,
-                order=order,
-                day_name=day_instance)
+            meal_name=meal_name,
+            recipe=recipe_instance,
+            plan=plan_instance,
+            order=order,
+            day_name=day_instance)
         if plan_instance and meal_name and day_instance and recipe_instance and order:
             recipe_instance_to_save.save()
             chosen_plan = Plan.objects.get(name=plan_name).id
@@ -206,3 +217,8 @@ class AddRecipeToPlanView(View):
             message = messages.info(request, "Nie dodano przepisu do planu -- podaj wszystkie dane")
             return redirect("/plan/add-recipe/", {"message": message})
 
+
+class DeleteRecipeFromPlanView(View):
+    def get(self, request, recipe_plan_id, plan_id):
+        RecipePlan.objects.filter(pk=recipe_plan_id).delete()
+        return redirect(f"/plan/{plan_id}/")
