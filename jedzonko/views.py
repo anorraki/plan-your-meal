@@ -176,9 +176,9 @@ class EditPlanView(View):
 
 class AddRecipeToPlanView(View):
     def get(self, request):
-        plans = Plan.objects.all()
-        recipes = Recipe.objects.all()
-        days = DayName.objects.all()
+        plans = Plan.objects.all().order_by('name')
+        recipes = Recipe.objects.all().order_by('name')
+        days = DayName.objects.all().order_by('order')
         return render(request, "app-schedules-meal-recipe.html", {'plans': plans, 'recipes': recipes, 'days': days})
 
     def post(self, request):
