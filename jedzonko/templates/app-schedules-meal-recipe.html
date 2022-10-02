@@ -9,12 +9,22 @@
             <h3 class="color-header text-uppercase">DODAJ PRZEPIS DO PLANU</h3>
         </div>
         <div class="col d-flex justify-content-end mb-2 noPadding">
-            <a href="#" class="btn btn-success rounded-0 pt-0 pb-0 pr-4 pl-4">Zapisz</a>
+            <button form="add_recipe" type="submit"  class="btn btn-success rounded-0 pt-0 pb-0 pr-4 pl-4">Zapisz</button>
+            <a>{{ message }}</a>
         </div>
     </div>
-    <form method="post">
-    {% csrf_token %}
+
+
     <div class="schedules-content">
+    <form method="post" action="/plan/add-recipe/" id="add_recipe">
+    {% csrf_token %}
+    {% if messages %}
+        <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                {{ message }}</li>
+        {% endfor %}
+        {% endif %}
             <div class="form-group row">
                 <label for="choosePlan"
                        class="col-sm-2 label-size col-form-label">
@@ -51,7 +61,7 @@
                     Przepis
                 </label>
                 <div class="col-sm-4">
-                    <select class="form-control" id="recipie" name="recipe">
+                    <select class="form-control"  id="recipe" name="recipe">
                         {% for recipe in recipes %}
                         <option>{{ recipe.name }}</option>
                         {% endfor %}
@@ -64,19 +74,15 @@
                 </label>
                 <div class="col-sm-2">
                     <select class="form-control" id="day" name="day">
-                        <option>poniedziałek</option>
-                        <option>wtorek</option>
-                        <option>środa</option>
-                        <option>czwartek</option>
-                        <option>piątek</option>
-                        <option>sobota</option>
-                        <option>niedziela</option>
+                        {% for day in days %}
+                        <option>{{ day.day_name }}</option>
+                        {% endfor %}
                     </select>
                 </div>
-                <input type="submit">
+
             </div>
+        </form>
     </div>
-    </form>
 </div>
 
 {% endblock content %}

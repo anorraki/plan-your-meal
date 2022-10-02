@@ -2,6 +2,7 @@ import random
 import re
 from datetime import datetime
 
+from django.contrib import messages
 from django.core.paginator import Paginator
 
 from django.shortcuts import render, redirect
@@ -138,21 +139,31 @@ class AddRecipeToPlanView(View):
     def get(self, request):
         plans = Plan.objects.all()
         recipes = Recipe.objects.all()
-        return render(request, "app-schedules-meal-recipe.html", {'plans': plans, 'recipes': recipes})
+        days = DayName.objects.all()
+        return render(request, "app-schedules-meal-recipe.html", {'plans': plans, 'recipes': recipes, 'days': days})
 
     def post(self, request):
         plan_name = request.POST.get('choosePlan')
         meal_name = request.POST.get('mealName')
-        meal_number = request.POST.get('mealNumber')
-        recipe = request.POST.get('recipe')
+        order = request.POST.get('mealNumber')
         day = request.POST.get('day')
+        recipe = request.POST.get('recipe')
 
         plan_instance = Plan.objects.get(name=plan_name)
         recipe_instance = Recipe.objects.get(name=recipe)
-        r = recipe_instance[0]
         day_instance = DayName.objects.get(day_name=day)
+        recipe_instance_to_save = RecipePlan(
+                meal_name=meal_name,
+                recipe=recipe_instance,
+                plan=plan_instance,
+                order=order,
+                day_name=day_instance)
+        if plan_instance and meal_name and day_instance and recipe_instance and order:
+            recipe_instance_to_save.save()
+            chosen_plan = Plan.objects.get(name=plan_name).id
+            message = messages.info(request, "Dodano przepis do planus")
+            return redirect(f"/plan/{chosen_plan}/", {"message": message})
+        else:
+            message = messages.info(request, "Nie dodano przepisu do planu -- podaj wszystkie dane")
+            return redirect("/plan/add-recipe/", {"message": message})
 
-        RecipePlan.objects.create(meal_name=meal_name, recipe=r, plan=plan_instance, order=meal_number, day_name=day_instance)
-        chosen_plan = Plan.objects.filter(name=plan_name).id
-        return redirect(f"/plan/{chosen_plan}/",)
-        # return render(request, "app-schedules-meal-recipe.html", {'info': f'plan_name {plan_name}, meal_name {meal_name}, meal_number {meal_number}, recipe {recipe}, day {day}.'})
