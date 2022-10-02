@@ -4,12 +4,11 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.core.paginator import Paginator
-
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.views import View
 from jedzonko.models import Recipe, Plan, DayName, RecipePlan
 
-from jedzonko.models import Recipe, Plan, RecipePlan, DayName
 
 
 class IndexView(View):
@@ -103,8 +102,34 @@ class AddRecipeView(View):
 
 
 class EditRecipeView(View):
-    def get(self, request):
-        return render(request, 'app-edit-recipe.html')
+    def get(self, request, recipe_id):
+        try:
+            recipe = Recipe.objects.get(pk=recipe_id)
+        except Recipe.DoesNotExist:
+            raise Http404("Przepis nie istnieje")
+        return render(request, 'app-edit-recipe.html', {'recipe': recipe})
+
+    def post(self, request, recipe_id):
+
+        name = request.POST['recipe_name']
+        ingredients = request.POST['recipe_ingredients']
+        description = request.POST['recipe_description']
+        preparation_time = request.POST['recipe_preparation']
+        method = request.POST['recipe_method']
+        if not name.strip(' ') or not ingredients.strip(' ') \
+                or not description.strip(' ') or not preparation_time \
+                or not method.strip(' '):
+            return render(request, 'app-edit-recipe.html', {'alert': 'Wypełnij poprawnie wszystkie pola.'})
+        else:
+            recipe = Recipe.objects.get(pk=recipe_id)
+            recipe.name = name
+            recipe.ingredients = ingredients
+            recipe.description = description
+            recipe.updated = datetime.now()
+            recipe.preparation_time = preparation_time
+            recipe.method = method
+            recipe.save()
+            return redirect('/recipe/list/')
 
 
 class PlansView(View):
@@ -122,8 +147,8 @@ class PlanDetailView(View):
         plan = Plan.objects.get(pk=plan_id)
         day_name = DayName.objects.count()
         detail_dict = {}
-        for day in range(1, day_name+1):
-            query_set = plan.recipeplan_set.filter(day_name=day).order_by("order")
+        for day in range(1, day_name + 1):
+            query_set = plan.recipeplan_set.filter(day_name=day).order_by('order')
             if query_set.count() != 0:
                 detail_dict[plan.recipeplan_set.filter(day_name=day)[0].day_name.day_name] = query_set[::1]
         return render(request, 'app-details-schedules.html', {'plan': plan,
