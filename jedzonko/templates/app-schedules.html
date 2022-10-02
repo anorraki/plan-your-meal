@@ -49,20 +49,25 @@
         </table>
     </div>
 </div>
-    <div class="pagination">
+    <div class="dashboard-menu">
     <span class="step-links">
         {% if plans.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ plans.previous_page_number }}">previous</a>
+            <a href="?page=1">&laquo; pierwsza </a>
+            <a href="?page={{ plans.previous_page_number }}">&laquo; poprzednia</a>
+            {% elif plans.has_previous == False %}
+                        &laquo; poprzednia
         {% endif %}
 
-        <span class="current">
-            Page {{ plans.number }} of {{ plans.paginator.num_pages }}.
+        <span class="color-header text-uppercase">
+        {% for page in plans.paginator.page_range %}
+        |<a href="?page={{ page }}">{{ page }}</a>
+        {% endfor %}|
         </span>
 
         {% if plans.has_next %}
-            <a href="?page={{ plans.next_page_number }}">next</a>
-            <a href="?page={{ plans.paginator.num_pages }}">last &raquo;</a>
+            <a href="?page={{ plans.next_page_number }}">następna &raquo;</a>
+        {% elif plans.has_next == False %}
+        następna &raquo;
         {% endif %}
     </span>
 </div>
