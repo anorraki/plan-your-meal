@@ -56,6 +56,20 @@ class RecipeDetailView(View):
         return render(request, 'app-recipe-details.html', {'recipe': recipe,
                                                            'ingredients': ingreditents_list})
 
+    def post(self, request, recipe_id):
+        recipe_idx = request.POST.get('recipe_id')
+        like = request.POST.get('like')
+        if like == 'like':
+            recipe = Recipe.objects.get(id=recipe_idx)
+            recipe.votes += 1
+            recipe.save()
+            return redirect(f"/recipe/{recipe_id}")
+        else:
+            recipe = Recipe.objects.get(id=recipe_idx)
+            recipe.votes -= 1
+            recipe.save()
+            return redirect(f'/recipe/{recipe_id}')
+
 
 class RecipesView(View):
     def get(self, request):
