@@ -211,8 +211,7 @@ class AddRecipeToPlanView(View):
         if plan_instance and meal_name and day_instance and recipe_instance and order:
             recipe_instance_to_save.save()
             chosen_plan = Plan.objects.get(name=plan_name).id
-            message = messages.info(request, "Dodano przepis do planus")
-            return redirect(f"/plan/{chosen_plan}/", {"message": message})
+            return redirect(f"/plan/{chosen_plan}/")
         else:
             message = messages.info(request, "Nie dodano przepisu do planu -- podaj wszystkie dane")
             return redirect("/plan/add-recipe/", {"message": message})
